@@ -53,7 +53,7 @@ async function run () {
             $set:user
           }
           const result = await userCollection.updateOne(filter, updateDoc, options);
-          const token = jwt.sign({email:email} , process.env.ACCESS_TOKEN , { expiresIn : '1h'} )
+          const token = jwt.sign({email:email} , process.env.ACCESS_TOKEN , { expiresIn : '24h'} )
           res.send({result , token})
         }) ;
 
@@ -64,13 +64,28 @@ async function run () {
 
         app.put("/user/admin/:email" ,verifyJWT, async(req,res) => {
           const email = req.params.email
-          const filter = { email: email };
-          const updateDoc = {
-            $set:{role:'admin'}
+          const requester =req.decoded.email
+          const reqAccount = await userCollection.findOne({email : requester})
+
+          if (reqAccount.role === 'admin'){
+            const filter = { email: email };
+            const updateDoc = {
+              $set:{role:'admin'}
+            }
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
           }
-          const result = await userCollection.updateOne(filter, updateDoc);
-          res.send(result)
+          else{
+            res.status(403).send({message:'forbidden'})
+          }
         }) ;
+
+        app.get('/user/admin/:email' , verifyJWT , async(req,res) => {
+          const email = req.params.email
+          const user = await userCollection.findOne({ email:email })
+          const isAdmin = user.role === 'admin'
+          res.send({ admin : isAdmin })
+        })
   }
   finally{
 
