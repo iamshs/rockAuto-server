@@ -36,6 +36,7 @@ async function run () {
         const partsCollection = client.db('rockAuto').collection('parts')
         const userCollection = client.db('rockAuto').collection('users')
         const profileCollection = client.db('rockAuto').collection('profile')
+        const reviewCollection = client.db('rockAuto').collection('reviews')
 
         app.get('/parts' , async(req,res) => {
            const query = {}
@@ -104,6 +105,14 @@ async function run () {
           const result = await profileCollection.insertOne(profile)
           res.send(result)
         });
+
+        //posting review
+
+        app.post('/review' , verifyJWT , async( req,res ) =>{
+          const review = req.body
+          const result = await reviewCollection.insertOne(review) ;
+          res.send(result) ;
+        })
   }
   finally{
 
