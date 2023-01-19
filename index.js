@@ -35,6 +35,7 @@ async function run () {
         await client.connect()
         const partsCollection = client.db('rockAuto').collection('parts')
         const userCollection = client.db('rockAuto').collection('users')
+        const profileCollection = client.db('rockAuto').collection('profile')
 
         app.get('/parts' , async(req,res) => {
            const query = {}
@@ -45,7 +46,7 @@ async function run () {
  
  //adding parts
  
-        app.post('/parts' , async(req,res)=>{
+        app.post('/parts' , verifyJWT , async(req,res)=>{
           const parts = req.body
           const result = await partsCollection.insertOne(parts)
           res.send(result)
@@ -94,7 +95,15 @@ async function run () {
           const user = await userCollection.findOne({ email:email })
           const isAdmin = user.role === 'admin'
           res.send({ admin : isAdmin })
-        })
+        }) ;
+
+        //adding profile
+
+        app.post('/profile' , verifyJWT , async (req,res) =>{
+          const profile = req.body
+          const result = await profileCollection.insertOne(profile)
+          res.send(result)
+        });
   }
   finally{
 
