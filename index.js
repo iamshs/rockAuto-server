@@ -42,6 +42,15 @@ async function run () {
            const parts = await cursor.toArray()
            res.send(parts) ;        
         });
+ 
+ //adding parts
+ 
+        app.post('/parts' , async(req,res)=>{
+          const parts = req.body
+          const result = await partsCollection.insertOne(parts)
+          res.send(result)
+        }) 
+
 //updating user
 
         app.put("/user/:email" , async(req,res) => {
@@ -53,7 +62,7 @@ async function run () {
             $set:user
           }
           const result = await userCollection.updateOne(filter, updateDoc, options);
-          const token = jwt.sign({email:email} , process.env.ACCESS_TOKEN , { expiresIn : '24h'} )
+          const token = jwt.sign({email:email} , process.env.ACCESS_TOKEN , { expiresIn : '24d'} )
           res.send({result , token})
         }) ;
 
