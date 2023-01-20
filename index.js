@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
@@ -37,13 +37,23 @@ async function run () {
         const userCollection = client.db('rockAuto').collection('users')
         const profileCollection = client.db('rockAuto').collection('profile')
         const reviewCollection = client.db('rockAuto').collection('reviews')
-
+//loading all parts
         app.get('/parts' , async(req,res) => {
            const query = {}
            const cursor = partsCollection.find(query)
            const parts = await cursor.toArray()
            res.send(parts) ;        
         });
+
+//loading single parts
+
+        app.get('/parts/:id' , async( req , res ) => {
+          const id = req.params.id
+          const query = _id = ObjectId(id)
+          const result = await partsCollection.findOne(query)
+          res.send(result)
+
+        }) ;
  
  //adding parts
  
