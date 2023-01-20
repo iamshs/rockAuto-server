@@ -37,7 +37,9 @@ async function run () {
         const userCollection = client.db('rockAuto').collection('users')
         const profileCollection = client.db('rockAuto').collection('profile')
         const reviewCollection = client.db('rockAuto').collection('reviews')
-//loading all parts
+        const orderCollection = client.db('rockAuto').collection('orders')
+
+         //loading all parts
         app.get('/parts' , async(req,res) => {
            const query = {}
            const cursor = partsCollection.find(query)
@@ -45,7 +47,7 @@ async function run () {
            res.send(parts) ;        
         });
 
-//loading single parts
+       //loading single parts
 
         app.get('/parts/:id' , async( req , res ) => {
           const id = req.params.id
@@ -55,7 +57,7 @@ async function run () {
 
         }) ;
  
- //adding parts
+       //adding parts
  
         app.post('/parts' , verifyJWT , async(req,res)=>{
           const parts = req.body
@@ -63,7 +65,7 @@ async function run () {
           res.send(result)
         }) 
 
-//updating user
+        //updating user
 
         app.put("/user/:email" , async(req,res) => {
           const email = req.params.email
@@ -122,6 +124,14 @@ async function run () {
           const review = req.body
           const result = await reviewCollection.insertOne(review) ;
           res.send(result) ;
+        }) ;
+
+        //posting order 
+
+        app.post('/order' , verifyJWT , async( req , res ) => {
+          const order = req.body
+          const result = await orderCollection.insertOne(order)
+          res.send(result)
         })
   }
   finally{
