@@ -65,6 +65,7 @@ async function run () {
           res.send(result)
         }) 
 
+
         //updating user
 
         app.put("/user/:email" , async(req,res) => {
@@ -118,6 +119,14 @@ async function run () {
           res.send(result)
         });
 
+        //loading profile
+
+        app.get('/profile/:email' , verifyJWT, async( req ,res ) =>{
+          const email = req.params.email
+          const result = await profileCollection.findOne({ email:email })
+          res.send(result)
+        })
+
         //posting review
 
         app.post('/review' , verifyJWT , async( req,res ) =>{
@@ -126,13 +135,31 @@ async function run () {
           res.send(result) ;
         }) ;
 
+        //loading review
+
+        app.get('/review' , verifyJWT , async(req,res) =>{
+
+          const review = await reviewCollection.find().toArray()
+          res.send(review) 
+
+        }) ;
+
         //posting order 
 
-        app.post('/order' , verifyJWT , async( req , res ) => {
+        app.post('/order' ,  async( req , res ) => {
           const order = req.body
           const result = await orderCollection.insertOne(order)
           res.send(result)
         })
+
+        //loading order
+
+        app.get('/orders' , async(req,res)=>{
+          const result = await orderCollection.find().toArray()
+          res.send(result)
+        })
+
+       
   }
   finally{
 
