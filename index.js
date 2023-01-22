@@ -81,10 +81,13 @@ async function run () {
           res.send({result , token})
         }) ;
 
+        //loading user
+
         app.get("/user",  async (req, res) => {
           const users = await userCollection.find().toArray();
           res.send(users);
         });
+        //updating user to admin
 
         app.put("/user/admin/:email" ,verifyJWT, async(req,res) => {
           const email = req.params.email
@@ -103,6 +106,8 @@ async function run () {
             res.status(403).send({message:'forbidden'})
           }
         }) ;
+      
+     //loading admin
 
         app.get('/user/admin/:email' , verifyJWT , async(req,res) => {
           const email = req.params.email
@@ -110,6 +115,15 @@ async function run () {
           const isAdmin = user.role === 'admin'
           res.send({ admin : isAdmin })
         }) ;
+
+        //deleting an user
+
+        app.delete('/user/:email' , verifyJWT , async( req , res) =>{
+          const email = req.params.email
+          const filter = {email:email}
+          const result = await userCollection.deleteOne(filter)
+          res.send(result)
+        })
 
         //adding profile
 
@@ -169,9 +183,10 @@ async function run () {
 
         })
 
-        app.delete('/order/:id' , async(req,res) =>{
-          const id = { _id : ObjectId.id}
-          const result = await orderCollection.deleteOne(id)
+        app.delete('/orders/:id' , verifyJWT , async(req,res) =>{
+           const id = req.params.id
+          const query = { _id : ObjectId(id)}
+          const result = await orderCollection.deleteOne(query)
           res.send(result)
         } )
 
