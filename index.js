@@ -56,6 +56,15 @@ async function run () {
           res.send(result)
 
         }) ;
+
+        //deleting parts
+
+        app.delete('/parts/:id' , verifyJWT , async(req,res) => {
+          const id = req.params.id
+          const filter = { _id: ObjectId(id) }
+          const result = await partsCollection.deleteOne(filter)
+          res.send(result)
+        })
  
        //adding parts
  
