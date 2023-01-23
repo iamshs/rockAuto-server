@@ -4,6 +4,7 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -89,6 +90,22 @@ async function run () {
           const token = jwt.sign({email:email} , process.env.ACCESS_TOKEN , { expiresIn : '24d'} )
           res.send({result , token})
         }) ;
+
+        //payment-intent 
+
+        app.post("/create-payment-intent"  , async(req,res) =>{
+          const order = req.body
+          const price = order.totalPrice
+          const amount = price*100
+          const paymentIntent = await stripe.paymentIntents.create({
+            amount : amount ,
+            currency: "usd",
+            payment_method_types : ["card"],
+          })
+          res.send({
+            clientSecret: paymentIntent.client_secret,
+          });
+        })
 
         //loading user
 
@@ -186,18 +203,18 @@ async function run () {
 
         app.get("/orders/:email" , async(req,res)=>{
           const email = req.params.email
-          const query ={email : email}
-          const result = await orderCollection.find(query).toArray()
+          const filter ={email : email}
+          const result = await orderCollection.find(filter).toArray()
           res.send(result)
 
         })
 
         //loading single order
 
-        app.get('/orders/:id' , verifyJWT , async(req,res) => {
+        app.get('/order/:id' , verifyJWT , async(req,res) => {
           const id = req.params.id
-          const filter = { _id : ObjectId(id) }
-          const order = await orderCollection.findOne(filter)
+          const query = { _id : ObjectId(id) }
+          const order = await orderCollection.findOne(query)
           res.send(order)
         } )
 
