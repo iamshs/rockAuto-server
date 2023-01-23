@@ -192,6 +192,17 @@ async function run () {
 
         })
 
+        //loading single order
+
+        app.get('/orders/:id' , verifyJWT , async(req,res) => {
+          const id = req.params.id
+          const filter = { _id : ObjectId(id) }
+          const order = await orderCollection.findOne(filter)
+          res.send(order)
+        } )
+
+        //deleting orders
+
         app.delete('/orders/:id' , verifyJWT , async(req,res) =>{
            const id = req.params.id
           const query = { _id : ObjectId(id)}
