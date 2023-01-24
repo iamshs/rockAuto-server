@@ -39,6 +39,7 @@ async function run () {
         const profileCollection = client.db('rockAuto').collection('profile')
         const reviewCollection = client.db('rockAuto').collection('reviews')
         const orderCollection = client.db('rockAuto').collection('orders')
+        const paymentCollection = client.db('rockAuto').collection('payments')
 
          //loading all parts
         app.get('/parts' , async(req,res) => {
@@ -93,7 +94,7 @@ async function run () {
 
         //payment-intent 
 
-        app.post("/create-payment-intent"  , async(req,res) =>{
+        app.post("/create-payment-intent" , async(req,res) =>{
           const order = req.body
           const price = order.totalPrice
           const amount = price*100
@@ -207,6 +208,23 @@ async function run () {
           const result = await orderCollection.find(filter).toArray()
           res.send(result)
 
+        })
+
+        //update order payment
+
+        app.patch('/order/:id' ,  async(req,res) =>{
+          const id = req.params.id
+          const payment = req.body
+          const filter = { _id : ObjectId(id) }
+          const updatedDoc ={
+            $set : {
+              paid : true ,
+              transactionId : payment.transactionId
+            }
+          }
+          const result = await paymentCollection.insertOne(payment)
+          const updatedOrder = await orderCollection.updateOne(filter,updatedDoc)
+          res.send(updatedOrder)
         })
 
         //loading single order
