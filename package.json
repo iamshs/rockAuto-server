@@ -2,11 +2,12 @@
   "name": "rockauto-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.js", "type" : "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "start-dev": "nodemon index.js"
+    "start-dev": "nodemon index.js" ,
+    "test": "echo \"Error: no test specified\" && exit 1"
+   
   },
   "keywords": [],
   "author": "",
