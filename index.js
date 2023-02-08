@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -35,7 +35,7 @@ function verifyJWT(req, res, next) {
 
 async function run() {
   try {
-    await client.connect();
+   
     const partsCollection = client.db("rockAuto").collection("parts");
     const userCollection = client.db("rockAuto").collection("users");
     const profileCollection = client.db("rockAuto").collection("profile");
@@ -55,23 +55,23 @@ async function run() {
 
     app.get("/parts/:id", async (req, res) => {
       const id = req.params.id;
-      const query = (_id = ObjectId(id));
+      const query = { _id : new ObjectId(id)};
       const result = await partsCollection.findOne(query);
       res.send(result);
     });
 
     //deleting parts
 
-    app.delete("/parts/:id", verifyJWT, async (req, res) => {
+    app.delete("/parts/:id",  async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: ObjectId(id) };
+      const filter = { _id: new ObjectId(id) };
       const result = await partsCollection.deleteOne(filter);
       res.send(result);
     });
 
     //adding parts
 
-    app.post("/parts", verifyJWT, async (req, res) => {
+    app.post("/parts",  async (req, res) => {
       const parts = req.body;
       const result = await partsCollection.insertOne(parts);
       res.send(result);
@@ -118,7 +118,7 @@ async function run() {
     });
     //updating user to admin
 
-    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
+    app.put("/user/admin/:email",  async (req, res) => {
       const email = req.params.email;
       const requester = req.decoded.email;
       const reqAccount = await userCollection.findOne({ email: requester });
@@ -137,7 +137,7 @@ async function run() {
 
     //loading admin
 
-    app.get("/user/admin/:email", verifyJWT, async (req, res) => {
+    app.get("/user/admin/:email",  async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user.role === "admin";
@@ -146,7 +146,7 @@ async function run() {
 
     //deleting an user
 
-    app.delete("/user/:email", verifyJWT, async (req, res) => {
+    app.delete("/user/:email",  async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const result = await userCollection.deleteOne(filter);
@@ -155,7 +155,7 @@ async function run() {
 
     //adding profile
 
-    app.post("/profile", verifyJWT, async (req, res) => {
+    app.post("/profile",  async (req, res) => {
       const profile = req.body;
       const result = await profileCollection.insertOne(profile);
       res.send(result);
@@ -163,34 +163,17 @@ async function run() {
 
     //loading profile
 
-    app.get("/profile/:email", verifyJWT, async (req, res) => {
+    app.get("/profile/:email", async (req, res) => {
       const email = req.params.email;
       const result = await profileCollection.findOne({ email: email });
       res.send(result);
     });
 
-    //updating profile
-
-    // app.put('/profile/:email' , async(req,res)=>{
-    //   const email = req.params.email
-    //   const profile = req.body
-    //   const filter = {email:email}
-    //   const options = {upsert:true}
-    //   const updateDoc = {
-    //     $set: {
-    //       displayName : profile.displayName ,
-    //       photoURL : profile.photoURL,
-    //       profession : profile.profession ,
-    //       homeTown : profile.homeTown
-    //     }
-    //   };
-    //   const result = await profileCollection.updateOne(filter, updateDoc)
-    //   res.send( result);
-    // })
+    
 
     //posting review
 
-    app.post("/review", verifyJWT, async (req, res) => {
+    app.post("/review",  async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.send(result);
@@ -198,7 +181,7 @@ async function run() {
 
     //loading review
 
-    app.get("/review", verifyJWT, async (req, res) => {
+    app.get("/review",  async (req, res) => {
       const review = await reviewCollection.find().toArray();
       res.send(review);
     });
@@ -232,7 +215,7 @@ async function run() {
     app.patch("/paymentOrder/:id", async (req, res) => {
       const id = req.params.id;
       const payment = req.body;
-      const filter = { _id: ObjectId(id) };
+      const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
           paid: true,
@@ -246,34 +229,20 @@ async function run() {
 
     //updating quantity after order
 
-  //   app.put('/inventory/:id', async (req, res) => {
-  //     const id = req.params.id;
-  //     const property = req.body;
-  //     const query = { _id: ObjectId(id) };
-  //     const options = { upsert: true };
-  //     const updateDoc = {
-  //         $set: {
-  //             quantity: property.newQuantity
-  //         }
-  //     };
-  //     const result = await inventoryCollection.updateOne(query, options, updateDoc);
-  //     res.send(result)
-  // })
-
     //loading order
 
-    app.get("/order/:id", verifyJWT, async (req, res) => {
+    app.get("/order/:id",  async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) };
+      const query = { _id: new ObjectId(id) };
       const order = await orderCollection.findOne(query);
       res.send(order);
     });
 
     //deleting orders
 
-    app.delete("/orders/:id", verifyJWT, async (req, res) => {
+    app.delete("/orders/:id",  async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) };
+      const query = { _id: new ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
       res.send(result);
     });
